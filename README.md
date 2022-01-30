@@ -14,12 +14,14 @@ Once the loop is finished it randomly places the order to watch/skip red sage, m
 
 Finally it prints out the generated list, with additional text fitted appropriately.
 
-The softlocks prevented:
+The softlocks prevented (some of these are not technically softlocks I know):
 
 - Misty cells before fish cell
 - Temple cells before top of temple cell
+- Plant boss before blue eco switch cell
 - FC cells before 20 cells collected
 - Too many purchasable cells before misty or hub 2/3 unlocked
 - Hub 2/3 cells before FC end cell
 - Snowy cells before at least 2 additional cells have been collected after FC end cell
+- Inside fortress cell before either fortress gate or flut flut egg obtained
 - Too many purchasable cells before misty or snowy unlocked
