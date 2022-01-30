@@ -9,8 +9,9 @@ int main()
 {
     srand(time(0));
 
-    int cell, cellCount = 0, purchased = 0, fcEnd, snowyFirst, waitTwo = 2;
-    bool fish = false, hubOne = false, snowy = false, invalid = false;
+    int cell, cellCount = 0, purchased = 0, fcEnd, snowyFirst = 100, waitTwo = 2;
+    // int loop = 0;
+    bool flutflut = false, fish = false, hubOne = false, snowy = false, fortress = false, invalid = false;
     string holdString;
 
     string invalidCells[94] = {
@@ -39,13 +40,13 @@ int main()
         "FJ: Scout flies",                  //#22
 		"FJ: Top of tower",                 //#23
 		"FJ: Plant boss",                   //#24
-		"FJ: Open blue eco vent",           //#25
+		"FJ: Blue eco switch",           //#25
 		"Misty: Pillar platform",           //#26
 		"Misty: Cannon",
 		"Misty: Ambush",
 		"Misty: On top of ship",
 		"Misty: Zeppelins",
-		"Misty: Wooden ramp",
+		"Misty: Floating zoomer cell",
 		"Misty: Scout flies",
 		"Misty: Muse",                      //#33
 		"FC: Scout flies",                  //#34
@@ -64,11 +65,11 @@ int main()
 		"Basin: Blue rings",
 		"Basin: Flying lurkers",
 		"Basin: Scout flies",
-		"LPC: Pipe cell",
-		"LPC: Circle room",
+		"LPC: Red Pipe",
+		"LPC: Spinning room",
 		"LPC: Puzzle",
-		"LPC: Piggyback tm",
-		"LPC: Far side of pool",
+		"LPC: Piggyback",
+		"LPC: Timed platforms",
 		"LPC: Bottom of city",
 		"LPC: Raise the chamber",
 		"LPC: Scout flies",
@@ -97,17 +98,17 @@ int main()
 		"Spider Cave: Dark cave",
 		"Spider Cave: Top of robot",
 		"Spider Cave: Poles",
-		"Spider Cave: Spider tunnel",
-		"Spider Cave: Platforms",
+		"Spider Cave: Spider nest",
+		"Spider Cave: Main chamber platforms",
 		"Spider Cave: Scout flies",         //#85
-		"Snowy: Yellow vent",               //#86
+		"Snowy: Yellow eco switch",               //#86
 		"Snowy: Glacier troops",
 		"Snowy: Blockers",
-		"Snowy: Secret cell",
+		"Snowy: Locked box cell",
 		"Snowy: Fortress door",
-		"Snowy: Fortress",
 		"Snowy: Lurker cave",
-		"Snowy: Scout flies" };             //#93
+		"Snowy: Scout flies",
+		"Snowy: Inside fortress" };             //#93
 
     vector<string> validCells;
     vector<string> chosenCells;
@@ -156,25 +157,40 @@ int main()
             }
             fish = true;
         }
+        //Flut flut [check]
+        if (validCells[cell] == "Sentinel: Flut flut egg") {
+            flutflut = true;
+        }
         //Top of temple [check]
         if (validCells[cell] == "FJ: Top of tower") {
-            for (int i = 24; i < 26; i++) {     //add temple cells to validCells[]
-                validCells.push_back(invalidCells[i]);
-            }
+            validCells.push_back(invalidCells[25]);     //add blue eco switch cell to validCells[]
+        }
+        //Blue eco switch [check]
+        if (validCells[cell] == "FJ: Blue eco switch") {
+            validCells.push_back(invalidCells[24]);     //add plant boss cell to validCells[]
         }
         //First Snowy cell [check]
-        if (waitTwo == 0 && !snowy && cell >= validCells.size() - 8) {
+        if (!snowy && holdString.find("Snowy") != std::string::npos) {
             snowyFirst = cellCount - 1;         //set variable for future use; randomising red sage and printing correctly
             snowy = true;
         }
         //Two cells after leaving hub 1 [check]
         if (hubOne && waitTwo > 0) {
             if (waitTwo == 1) {
-                for (int i = 86; i < 94; i++) { //add all Snowy cells to validCells[]
+                for (int i = 86; i < 93; i++) { //add all Snowy cells excluding inside Fortress to validCells[]
                     validCells.push_back(invalidCells[i]);
+                }
+                if (flutflut) {                 //add Fortress cell if flut flut has been obtained
+                    validCells.push_back(invalidCells[93]);
+                    fortress = true;
                 }
             }
             waitTwo--;
+        }
+        //Fortress cell add [check]
+        if (!fortress && snowy && flutflut || validCells[cell] == "Snowy: Fortress door") {
+            validCells.push_back(invalidCells[93]);     //add Fortress cell if flut flut or Fortress door has been obtained after Snowy was unlocked
+            fortress = true;
         }
         //Leaving hub 1 [check]
         if (validCells[cell] == "FC: Reach end") {
@@ -195,23 +211,25 @@ int main()
     int redSage = rand() % (snowyFirst - fcEnd - 2) + (fcEnd);
 
     //Final Print
-    cout<<endl<<endl<<"Final list:"<<endl;
+    cout<<endl<<endl<<"Final list:"<<endl<<endl;
     for (int i=0;i < chosenCells.size(); i++) {
 
-        if (chosenCells[i-1] == "FJ: Fish") {
-            cout<<"----Misty Island unlocked----"<<endl;
-        }
-        if (i == 20) {
-            cout<<"----Fire Canyon unlocked----"<<endl;
-        }
-        if (chosenCells[i-1] == "FC: Reach end") {
-            cout<<"----Hub 2/3 unlocked----"<<endl;
-        }
-        if (i == redSage + 1) {
-            cout<<"[Watch/Skip Red Sage cutscene now]"<<endl;
-        }
-        if (i == redSage + 3) {
-            cout<<"----Snowy Mountain unlocked----"<<endl;
+        if (i > 4) {
+            if (chosenCells[i-1] == "FJ: Fish") {
+                cout<<"----Misty Island unlocked----"<<endl;
+            }
+            if (i == 20) {
+                cout<<"----Fire Canyon unlocked----"<<endl;
+            }
+            if (chosenCells[i-1] == "FC: Reach end") {
+                cout<<"----Hub 2/3 unlocked----"<<endl;
+            }
+            if (snowyFirst < 100 && i == redSage + 1) {
+                cout<<"[Watch/Skip Red Sage cutscene now]"<<endl;
+            }
+            if (snowyFirst < 100 && i == redSage + 3) {
+                cout<<"----Snowy Mountain unlocked----"<<endl;
+            }
         }
 
         cout<<i+1<<". "<<chosenCells[i]<<endl;
